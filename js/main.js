@@ -218,6 +218,10 @@
     });
   }
 
+  /* ---------- date pickers: no past dates + readable format ---------- */
+  function fmtDate(v) { return /^\d{4}-\d{2}-\d{2}$/.test(v || '') ? new Date(v + 'T00:00:00').toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : ''; }
+  Array.prototype.forEach.call(document.querySelectorAll('input[data-min-today]'), function (i) { var t = new Date(); t.setMinutes(t.getMinutes() - t.getTimezoneOffset()); i.min = t.toISOString().slice(0, 10); });
+
   /* ---------- Inquiry forms (contact + custom order): WhatsApp or Email ---------- */
   var form = $('#inquiry-form');
   if (form) {
@@ -256,7 +260,7 @@
       var rows = [intro, ''];
       Array.prototype.forEach.call(form.elements, function (el) {
         if (!el.name || el.type === 'button' || el.type === 'submit') return;
-        var v = (el.value || '').trim();
+        var v = el.type === 'date' ? fmtDate(el.value) : (el.value || '').trim();
         if (v) rows.push(labelOf(el) + ': ' + v);
       });
       return rows.join('\n');
